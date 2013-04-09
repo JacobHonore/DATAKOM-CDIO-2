@@ -38,7 +38,7 @@ class TCPClient {
 			outToServer.writeBytes("RM20 4 \"" + txt + "\" \"\" \"&3\"\r\n");
 			
 			//sekvens 4
-			temp = inFromServer.readLine().split("/");
+			temp = inFromServer.readLine().split("_");
 			itemNo = Integer.parseInt(temp[2]);
 			boolean NotFound = true;
 			while(NotFound){
