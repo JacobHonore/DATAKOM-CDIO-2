@@ -5,7 +5,7 @@ import java.net.*;
 class TCPClient { 
 
 	public static void main(String[] args) throws Exception { 
-
+		
 		String sentence, modifiedSentence, txt, oprID, item;
 		int itemNo, temp1;
 		String[] temp;
@@ -21,16 +21,16 @@ class TCPClient {
 		BufferedReader inFromServer = 
 				new BufferedReader(new
 						InputStreamReader(clientSocket.getInputStream())); 
-		BufferedReader inFromLocal = new BufferedReader(new FileReader("store.txt"));
+		BufferedReader inFromLocal = new BufferedReader(new FileReader(new File("store.txt")));
+		System.out.println(inFromLocal.readLine());
 		
-		
-		do{
+//		do{
 			//sekvens 1 
 			txt = "Indtast ID";
 			outToServer.writeBytes("RM20 8 \"" + txt + "\" \"\" \"&3\"\r\n");
 			
 			//sekvens 2
-			temp = inFromServer.readLine().split("/");
+			temp = inFromServer.readLine().split("_");
 			oprID = temp[2];
 			
 			//sekvens 3
@@ -55,11 +55,11 @@ class TCPClient {
 				
 			}
 				
-				inFromLocal.readLine()
+				inFromLocal.readLine();
 			
 			
-		}
-		while()
+//		}
+//		while();
 
 //		try{
 //			do{
@@ -119,6 +119,7 @@ class TCPClient {
 
 		clientSocket.close(); 
 		inFromUser.close();
+		inFromLocal.close();
 	} 
 } 
 
