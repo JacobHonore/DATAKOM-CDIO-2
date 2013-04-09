@@ -1,0 +1,11 @@
+100,kogesalt
+101,nitrit
+102,calcium
+103,klor
+104,jern
+105,guld
+106,sølv
+107,barium
+108,fluor
+109,magnesium
+110,sulfid
