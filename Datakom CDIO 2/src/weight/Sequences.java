@@ -16,12 +16,19 @@ public class Sequences {
 	private String[] splittedInput = new String[10];
 	private double tara, netto, bruttoCheck;
 
+	//-----------------------------------------------------------------
+	// (1)	Vægtdisplay spørger om oprID og afventer input
+	//-----------------------------------------------------------------
 	public void sequence1(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		weightMsg = "Indtast ID";
 		outToServer.writeBytes("RM20 8 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 		this.sequence2(inFromLocal, inFromServer, outToServer);
 	}
+	
+	//-----------------------------------------------------------------
+	// (2)	oprID indlæses og gemmes i lokal variabel
+	//-----------------------------------------------------------------
 	public void sequence2(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		serverInput = inFromServer.readLine();
@@ -34,8 +41,10 @@ public class Sequences {
 			this.sequence3(inFromLocal, inFromServer, outToServer);
 		}
 	}
-
-
+	
+	//-----------------------------------------------------------------
+	// (3)	Vægtdisplay spørger om varenummer og afventer input
+	//-----------------------------------------------------------------
 	public void sequence3(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		//Sekvens 3 kunne kombineres med sekvens 4.
@@ -43,7 +52,10 @@ public class Sequences {
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 		this.sequence4(inFromLocal, inFromServer, outToServer);
 	}
-
+	
+	//-----------------------------------------------------------------
+	// (4)	Varenummer indlæses og gemmes i lokal variabel
+	//-----------------------------------------------------------------
 	public void sequence4(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		serverInput = inFromServer.readLine();
@@ -52,11 +64,17 @@ public class Sequences {
 			serverInput = inFromServer.readLine();
 			splittedInput = serverInput.split(" ");
 			itemNoInput = Integer.parseInt(splittedInput[2]);
-			this.sequence5(inFromLocal, inFromServer, outToServer);
+			this.sequence5_6(inFromLocal, inFromServer, outToServer);
 		}
 	}
-
-	public void sequence5(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
+	
+	//-----------------------------------------------------------------
+	// (5)	Program sammenligner userinput med varenumre i store.txt
+	// (6)	Når identisk varenummer er fundet spørger program bruger
+	//		om det er korrekt varenavn. Hvis ja sendes videre til næste
+	//		sekvens. Hvis nej køres sequence3()
+	//-----------------------------------------------------------------
+	public void sequence5_6(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		boolean notFound = true;
 		while(notFound){
@@ -80,7 +98,7 @@ public class Sequences {
 					userInput = splittedInput[2];		
 					if(userInput.equals("1"))
 					{
-						this.sequence6_7(inFromLocal, inFromServer, outToServer);
+						this.sequence7(inFromLocal, inFromServer, outToServer);
 					}
 					//Fejl: Kan annullere, men kan derefter ikke vælge samme vare igen.
 					else if(userInput.equals("0"))
@@ -91,8 +109,11 @@ public class Sequences {
 			}
 		}
 	}
-
-	public void sequence6_7(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
+	
+	//-----------------------------------------------------------------
+	// (7)	Vægtdisplay beder om evt. tara og bekræfte 	
+	//-----------------------------------------------------------------
+	public void sequence7(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		weightMsg = "Anbring evt. skål og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
@@ -102,13 +123,16 @@ public class Sequences {
 		if(serverInput.equals("RM20 B"))
 			serverInput = inFromServer.readLine();
 		else
-			this.sequence6_7(inFromLocal, inFromServer, outToServer);
+			this.sequence7(inFromLocal, inFromServer, outToServer);
 
 		if(serverInput.startsWith("RM20 A"))
 			this.sequence8(inFromLocal, inFromServer, outToServer);
 
 	}
 
+	//-----------------------------------------------------------------
+	// (8) Vægt tareres og tara gemmes i lokal variabel
+	//-----------------------------------------------------------------
 	public void sequence8(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		outToServer.writeBytes("T\r\n");
@@ -119,9 +143,12 @@ public class Sequences {
 			tara = Double.parseDouble(splittedInput[2]);
 			this.sequence9(inFromLocal, inFromServer, outToServer);
 		}
-		else this.sequence6_7(inFromLocal, inFromServer, outToServer);
+		else this.sequence7(inFromLocal, inFromServer, outToServer);
 	}
 
+	//-----------------------------------------------------------------
+	// (9) Vægtdisplay spørger om oprID og afventer input
+	//-----------------------------------------------------------------
 	public void sequence9(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		weightMsg = "Påfyld vare og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
@@ -201,7 +228,7 @@ public class Sequences {
 				this.sequence14(inFromLocal, inFromServer, outToServer);
 
 			if(serverInput.startsWith("RM20 A"))
-				this.sequence6_7(inFromLocal, inFromServer, outToServer);
+				this.sequence7(inFromLocal, inFromServer, outToServer);
 		}
 		else{
 
@@ -246,12 +273,12 @@ public class Sequences {
 
 	public void log() throws IOException{
 
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("Log.txt")));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("Log.txt"), true));
 		Calendar d = Calendar.getInstance();
-		String timeStamp = "" + d.get(Calendar.YEAR) + "-" + (d.get(Calendar.MONTH) + 1) + "-" + d.get(Calendar.DATE) + "   " + d.get(Calendar.HOUR_OF_DAY) + ":" + d.get(Calendar.MINUTE) + ":" + d.get(Calendar.SECOND);
+		String timeStamp = "" + d.get(Calendar.YEAR) + "-" + (d.get(Calendar.MONTH) + 1) + "-" + d.get(Calendar.DATE) + "-" + d.get(Calendar.HOUR_OF_DAY) + ":" + d.get(Calendar.MINUTE) + ":" + d.get(Calendar.SECOND);
 
-		bw.newLine();
 		bw.write(timeStamp + ", " + oprID + ", " + itemNoInput + ", " + itemName + ", " + netto + " kg.");
+		bw.newLine();
 		bw.flush();
 		bw.close();
 	}
