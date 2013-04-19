@@ -17,7 +17,7 @@ public class Sequences {
 	private double tara, netto, bruttoCheck;
 
 	//-----------------------------------------------------------------
-	// (1)	Vægtdisplay spørger om oprID og afventer input
+	// (1)	Vï¿½gtdisplay spï¿½rger om oprID og afventer input
 	//-----------------------------------------------------------------
 	public void sequence1(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -27,7 +27,7 @@ public class Sequences {
 	}
 	
 	//-----------------------------------------------------------------
-	// (2)	oprID indlæses og gemmes i lokal variabel
+	// (2)	oprID indlï¿½ses og gemmes i lokal variabel
 	//-----------------------------------------------------------------
 	public void sequence2(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -43,7 +43,7 @@ public class Sequences {
 	}
 	
 	//-----------------------------------------------------------------
-	// (3)	Vægtdisplay spørger om varenummer og afventer input
+	// (3)	Vï¿½gtdisplay spï¿½rger om varenummer og afventer input
 	//-----------------------------------------------------------------
 	public void sequence3(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -54,13 +54,15 @@ public class Sequences {
 	}
 	
 	//-----------------------------------------------------------------
-	// (4)	Varenummer indlæses og gemmes i lokal variabel
+	// (4)	Varenummer indlï¿½ses og gemmes i lokal variabel
 	//-----------------------------------------------------------------
 	public void sequence4(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		serverInput = inFromServer.readLine();
 		splittedInput = serverInput.split(" ");
-		if(serverInput.equals("RM20 B")){
+		//Herunder modtager vi RM20 B ordren som indeholder et varenummer.
+		//Kommandoen opdeles ved hjÃ¦lp af split og vi vÃ¦lger plads [2], sÃ¥ledes at vi ender med et varenummer. 
+		if(serverInput.equals("RM20 B")){ 
 			serverInput = inFromServer.readLine();
 			splittedInput = serverInput.split(" ");
 			itemNoInput = Integer.parseInt(splittedInput[2]);
@@ -70,9 +72,9 @@ public class Sequences {
 	
 	//-----------------------------------------------------------------
 	// (5)	Program sammenligner userinput med varenumre i store.txt
-	// (6)	Når identisk varenummer er fundet spørger program bruger
-	//		om det er korrekt varenavn. Hvis ja sendes videre til næste
-	//		sekvens. Hvis nej køres sequence3()
+	// (6)	Nï¿½r identisk varenummer er fundet spï¿½rger program bruger
+	//		om det er korrekt varenavn. Hvis ja sendes videre til nï¿½ste
+	//		sekvens. Hvis nej kï¿½res sequence3()
 	//-----------------------------------------------------------------
 	public void sequence5_6(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -81,26 +83,30 @@ public class Sequences {
 			splittedInput = inFromLocal.readLine().split(",");
 			itemNoStore = Integer.parseInt(splittedInput[0]);
 
-			if(itemNoStore == itemNoInput){
+			if(itemNoStore == itemNoInput){ 
+				//SÃ¥ snart at det indtastede nummer er lig et nummer i "databasen", 
+				// sÃ¦ttes notFound = false og nedenstÃ¥ende kode eksekveres. 
 				notFound = false;
 				itemName = splittedInput[1];
 				weightMsg = "Vare: " + itemName + "\nTast 1 for OK eller 0 for Annuller."; 
 				outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 
 				serverInput = inFromServer.readLine();
-				//		serverInput = inFromServer.readLine();
-				//		serverInput = inFromServer.readLine();
+				//	serverInput = inFromServer.readLine();
+				//	serverInput = inFromServer.readLine();
 				splittedInput = serverInput.split(" ");
 				if(serverInput.equals("RM20 B"))
 				{
 					serverInput = inFromServer.readLine();
 					splittedInput = serverInput.split(" ");
 					userInput = splittedInput[2];		
+					
+					//Hvis varen er korrekt fortsÃ¦ttes der til sekvens 7 ellers starter man forfra i sekvens 3.
 					if(userInput.equals("1"))
 					{
 						this.sequence7(inFromLocal, inFromServer, outToServer);
 					}
-					//Fejl: Kan annullere, men kan derefter ikke vælge samme vare igen.
+					//Fejl: Kan annullere, men kan derefter ikke vï¿½lge samme vare igen.
 					else if(userInput.equals("0"))
 					{
 						this.sequence3(inFromLocal, inFromServer, outToServer);
@@ -111,11 +117,11 @@ public class Sequences {
 	}
 	
 	//-----------------------------------------------------------------
-	// (7)	Vægtdisplay beder om evt. tara og bekræfte 	
+	// (7)	Vï¿½gtdisplay beder om evt. tara og bekrï¿½fte 	
 	//-----------------------------------------------------------------
 	public void sequence7(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		weightMsg = "Anbring evt. skål og tast enter.";
+		weightMsg = "Anbring evt. skï¿½l og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 
 		serverInput = inFromServer.readLine();
@@ -131,7 +137,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (8) Vægt tareres og tara gemmes i lokal variabel
+	// (8) Vï¿½gt tareres og tara gemmes i lokal variabel
 	//-----------------------------------------------------------------
 	public void sequence8(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -147,10 +153,10 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (9) Vægtdisplay spørger om oprID og afventer input
+	// (9) Vï¿½gtdisplay spï¿½rger om oprID og afventer input
 	//-----------------------------------------------------------------
 	public void sequence9(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
-		weightMsg = "Påfyld vare og tast enter.";
+		weightMsg = "Pï¿½fyld vare og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 
 		serverInput = inFromServer.readLine();
@@ -178,7 +184,7 @@ public class Sequences {
 	}
 
 	public void sequence11(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
-		weightMsg = "Fjern enheder fra vægt og tast enter.";
+		weightMsg = "Fjern enheder fra vï¿½gt og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 
 		serverInput = inFromServer.readLine();
@@ -197,7 +203,7 @@ public class Sequences {
 
 	public void sequence12(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
-		weightMsg = "Vægt er tareret";
+		weightMsg = "Vï¿½gt er tareret";
 		outToServer.writeBytes("D \""+weightMsg+"\"\r\n");
 		outToServer.writeBytes("T\r\n");
 		this.sequence13(inFromLocal, inFromServer, outToServer);
