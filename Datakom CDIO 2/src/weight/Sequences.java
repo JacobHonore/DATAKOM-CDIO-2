@@ -41,9 +41,13 @@ public class Sequences {
 		//		serverInput = inFromServer.readLine();
 		if(serverInput.equals("RM20 B")){
 			serverInput = inFromServer.readLine();
-			splittedInput = serverInput.split(" ");
-			oprID = splittedInput[2];
-			this.sequence3(inFromServer, outToServer);
+			if (!aborted()) {
+				splittedInput = serverInput.split(" ");
+				oprID = splittedInput[2];
+				this.sequence3(inFromServer, outToServer);
+			}
+			else
+				this.sequence1(inFromServer, outToServer);
 		}
 		System.out.println("sekvens3 kaldt");
 	}
@@ -70,9 +74,13 @@ public class Sequences {
 		//Kommandoen opdeles ved hjælp af split og vi vælger plads [2], således at vi ender med et varenummer. 
 		if(serverInput.equals("RM20 B")){ 
 			serverInput = inFromServer.readLine();
-			splittedInput = serverInput.split(" ");
-			itemNoInput = Integer.parseInt(splittedInput[2]);
-			this.sequence5_6(inFromServer, outToServer);
+			if(!aborted()){
+				splittedInput = serverInput.split(" ");
+				itemNoInput = Integer.parseInt(splittedInput[2]);
+				this.sequence5_6(inFromServer, outToServer);
+			}
+			else
+				this.sequence1(inFromServer, outToServer);
 		}
 	}
 
@@ -113,19 +121,23 @@ public class Sequences {
 				if(serverInput.equals("RM20 B"))
 				{
 					serverInput = inFromServer.readLine();
-					splittedInput = serverInput.split(" ");
-					userInput = splittedInput[2];		
+					if(!aborted()){
+						splittedInput = serverInput.split(" ");
+						userInput = splittedInput[2];		
 
-					//Hvis varen er korrekt fortsættes der til sekvens 7 ellers starter man forfra i sekvens 3.
-					if(userInput.equals("1"))
-					{
-						this.sequence7(inFromServer, outToServer);
+						//Hvis varen er korrekt fortsættes der til sekvens 7 ellers starter man forfra i sekvens 3.
+						if(userInput.equals("1"))
+						{
+							this.sequence7(inFromServer, outToServer);
+						}
+						//Fejl: Kan annullere, men kan derefter ikke v�lge samme vare igen.
+						else if(userInput.equals("0"))
+						{
+							this.sequence3(inFromServer, outToServer);
+						}
 					}
-					//Fejl: Kan annullere, men kan derefter ikke v�lge samme vare igen.
-					else if(userInput.equals("0"))
-					{
-						this.sequence3(inFromServer, outToServer);
-					}
+					else
+						this.sequence1(inFromServer, outToServer);
 				}
 			}
 		}
@@ -133,7 +145,7 @@ public class Sequences {
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 		inFromServer.readLine();
 		this.sequence3(inFromServer, outToServer);
-		
+
 	}
 
 	//-----------------------------------------------------------------
@@ -151,8 +163,10 @@ public class Sequences {
 		else
 			this.sequence7(inFromServer, outToServer);
 
-		if(serverInput.startsWith("RM20 A"))
+		if(!aborted())
 			this.sequence8(inFromServer, outToServer);
+		else
+			this.sequence1(inFromServer, outToServer);
 
 	}
 
@@ -186,8 +200,10 @@ public class Sequences {
 		else
 			this.sequence9(inFromServer, outToServer);
 
-		if(serverInput.startsWith("RM20 A"))
+		if(!aborted())
 			this.sequence10(inFromServer, outToServer);
+		else
+			this.sequence1(inFromServer, outToServer);
 	}
 
 	public void sequence10(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
@@ -217,8 +233,10 @@ public class Sequences {
 			this.sequence11(inFromServer, outToServer);
 
 
-		if(serverInput.startsWith("RM20 A"))
+		if(!aborted())
 			this.sequence12(inFromServer, outToServer);
+		else
+			this.sequence1(inFromServer, outToServer);
 	}
 
 	public void sequence12(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
@@ -302,6 +320,10 @@ public class Sequences {
 		bw.newLine();
 		bw.flush();
 		bw.close();
+	}
+
+	boolean aborted(){
+		return !serverInput.startsWith("RM20 A");
 	}
 
 
