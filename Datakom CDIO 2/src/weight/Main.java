@@ -2,8 +2,6 @@ package weight;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
@@ -24,9 +22,9 @@ public class Main {
 		BufferedReader inFromServer = 
 				new BufferedReader(new
 						InputStreamReader(clientSocket.getInputStream())); 
-		BufferedReader inFromLocal = new BufferedReader(new FileReader(new File("store.txt")));
+		
 
-		s.sequence1(inFromLocal, inFromServer, outToServer);
+		s.sequence1(inFromServer, outToServer);
 
 		clientSocket.close();
 	}
