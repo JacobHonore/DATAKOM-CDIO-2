@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 
 public class Sequences {
@@ -281,7 +282,8 @@ public class Sequences {
 
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("Log.txt"), true));
 		Calendar d = Calendar.getInstance();
-		String timeStamp = "" + d.get(Calendar.YEAR) + "-" + (d.get(Calendar.MONTH) + 1) + "-" + d.get(Calendar.DATE) + "-" + d.get(Calendar.HOUR_OF_DAY) + ":" + d.get(Calendar.MINUTE) + ":" + d.get(Calendar.SECOND);
+		DecimalFormat df = new DecimalFormat("00");
+		String timeStamp = "" + d.get(Calendar.YEAR) + "-" + df.format(d.get(Calendar.MONTH) + 1) + "-" + df.format(d.get(Calendar.DATE)) + "-" + df.format(d.get(Calendar.HOUR_OF_DAY)) + ":" + df.format(d.get(Calendar.MINUTE)) + ":" + df.format(d.get(Calendar.SECOND));
 
 		bw.write(timeStamp + ", " + oprID + ", " + itemNoInput + ", " + itemName + ", " + netto + " kg.");
 		bw.newLine();
