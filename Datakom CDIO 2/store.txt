@@ -4,7 +4,7 @@
 103,klor
 104,jern
 105,guld
-106,sølv
+106,soelv
 107,barium
 108,fluor
 109,magnesium
