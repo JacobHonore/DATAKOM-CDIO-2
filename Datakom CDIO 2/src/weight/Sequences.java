@@ -149,7 +149,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (7)	V�gtdisplay beder om evt. tara og bekr�fte 	
+	// (7)	V�gtdisplay beder om evt. tara og at brugeren bekræfter. 	
 	//-----------------------------------------------------------------
 	public void sequence7(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -187,7 +187,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (9) V�gtdisplay sp�rger om oprID og afventer input
+	// (9) Operatøren instrueres til at påfylde vare og derefter trykke enter.
 	//-----------------------------------------------------------------
 	public void sequence9(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		weightMsg = "P�fyld vare og tast enter.";
@@ -206,6 +206,9 @@ public class Sequences {
 			this.sequence1(inFromServer, outToServer);
 	}
 
+	//-----------------------------------------------------------------
+	// (10) Netto registreres.
+	//-----------------------------------------------------------------
 	public void sequence10(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
 		outToServer.writeBytes("S\r\n");
@@ -219,6 +222,9 @@ public class Sequences {
 		else this.sequence9(inFromServer, outToServer);
 	}
 
+	//-----------------------------------------------------------------
+	// (11) Operat�ren instrueres til at fjerne netto og tara.
+	//-----------------------------------------------------------------
 	public void sequence11(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		weightMsg = "Fjern enheder fra v�gt og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
@@ -238,7 +244,9 @@ public class Sequences {
 		else
 			this.sequence1(inFromServer, outToServer);
 	}
-
+	//-----------------------------------------------------------------
+	// (12) Vægt tareres.
+	//-----------------------------------------------------------------	
 	public void sequence12(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
 		weightMsg = "V�gt er tareret";
@@ -247,6 +255,9 @@ public class Sequences {
 		this.sequence13(inFromServer, outToServer);
 	}
 
+	//-----------------------------------------------------------------
+	// (13) Minus brutto registreres.
+	//-----------------------------------------------------------------
 	public void sequence13(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
 		serverInput = inFromServer.readLine();
@@ -257,7 +268,10 @@ public class Sequences {
 		}
 		else this.sequence14(inFromServer, outToServer);
 	}
-
+	
+	//-----------------------------------------------------------------
+	// (14) Bruttokontrol OK, hvis det er tilf�ldet.
+	//-----------------------------------------------------------------
 	public void sequence14(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		if(bruttoCheck >= 2 || bruttoCheck <= -2){
 
@@ -285,6 +299,9 @@ public class Sequences {
 		}
 	}
 
+	//-----------------------------------------------------------------
+	// (15) Mængde på lager afskrives og historikken opdateres.
+	//-----------------------------------------------------------------
 	public void sequence15(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
 		try{
