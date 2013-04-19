@@ -48,7 +48,6 @@ public class Sequences {
 	//-----------------------------------------------------------------
 	public void sequence3(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		//Sekvens 3 kunne kombineres med sekvens 4.
 		weightMsg = "Indtast varenummer";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 		this.sequence4(inFromLocal, inFromServer, outToServer);
@@ -118,11 +117,11 @@ public class Sequences {
 	}
 	
 	//-----------------------------------------------------------------
-	// (7)	V�gtdisplay beder om evt. tara og bekr�fte 	
+	// (7)	Vægtdisplay beder operatør om at påsætte evt. tara.
 	//-----------------------------------------------------------------
 	public void sequence7(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		weightMsg = "Anbring evt. sk�l og tast enter.";
+		weightMsg = "Anbring evt. skål og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 
 		serverInput = inFromServer.readLine();
@@ -138,35 +137,37 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (8) V�gt tareres og tara gemmes i lokal variabel
+	// (8) Vægt tareres og tara gemmes derefter i lokal variabel.
 	//-----------------------------------------------------------------
 	public void sequence8(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
-	{
+ {
 		outToServer.writeBytes("T\r\n");
 
 		serverInput = inFromServer.readLine();
-		if(serverInput.startsWith("T S")){
+		if (serverInput.startsWith("T S")) {
 			splittedInput = serverInput.split(" +");
 			tara = Double.parseDouble(splittedInput[2]);
 			this.sequence9(inFromLocal, inFromServer, outToServer);
-		}
-		else this.sequence7(inFromLocal, inFromServer, outToServer);
+		} else
+			this.sequence7(inFromLocal, inFromServer, outToServer);
 	}
 
 	//-----------------------------------------------------------------
-	// (9) V�gtdisplay sp�rger om oprID og afventer input
+	// (9) Vægtdisplay viser besked om at operatør nu kan påfylde vare.
 	//-----------------------------------------------------------------
 	public void sequence9(BufferedReader inFromLocal, BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		weightMsg = "P�fyld vare og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 
 		serverInput = inFromServer.readLine();
-
+		
+		// Tjekker om kommando er eksekveret, hvis den ikke udført starter sekvens 9 igen.
 		if(serverInput.equals("RM20 B"))
 			serverInput = inFromServer.readLine();
 		else
 			this.sequence9(inFromLocal, inFromServer, outToServer);
-
+		
+		//Hvis kommandoen RM20 A modtages, fortsættes der til sekvens 10.
 		if(serverInput.startsWith("RM20 A"))
 			this.sequence10(inFromLocal, inFromServer, outToServer);
 	}
