@@ -117,14 +117,9 @@ public class Sequences {
 				notFound = false;
 				d.setItemName(d.getSplittedInput()[1]);
 				
-				System.out.println(">>"+d.getItemName());
-				
 				d.setWeightMsg("Vare: " + d.getItemName()); 
 				
-				System.out.println("msg: " + d.getWeightMsg());
-				
 				outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
-				outToServer.flush();
 
 				d.setServerInput(inFromServer.readLine());
 //				d.setServerInput(inFromServer.readLine());
@@ -138,15 +133,13 @@ public class Sequences {
 						d.setSplittedInput(d.getServerInput().split(" "));
 						d.setUserInput(d.getSplittedInput()[2]);		
 
-						//Hvis varen er korrekt fortsættes der til sekvens 7 ellers starter man forfra i sekvens 3.
-						System.out.println("server: " + d.getUserInput());
-						
+						//Hvis varen er korrekt fortsættes der til sekvens 7 ellers starter man forfra i sekvens 3.						
 						if(d.getUserInput().equals("\"1\""))
 						{
 							this.sequence7(inFromServer, outToServer);
 						}
 						//Fejl: Kan annullere, men kan derefter ikke v�lge samme vare igen.
-						else if(d.getUserInput().equals("0"))
+						else if(d.getUserInput().equals("\"0\""))
 						{
 							this.sequence3(inFromServer, outToServer);
 						}
@@ -156,7 +149,7 @@ public class Sequences {
 				}
 			}
 		}
-		d.setWeightMsg("Varenummer ikke fundet. Tast enter.");
+		d.setWeightMsg("Varenummer ikke fundet");
 		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 		inFromServer.readLine();
 		this.sequence3(inFromServer, outToServer);
@@ -168,7 +161,7 @@ public class Sequences {
 	//-----------------------------------------------------------------
 	public void sequence7(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		d.setWeightMsg("Anbring skål,enter");
+		d.setWeightMsg("Anbring skål");
 		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
 		d.setServerInput(inFromServer.readLine());
@@ -205,7 +198,7 @@ public class Sequences {
 	// (9) Operatøren instrueres til at påfylde vare og derefter trykke enter.
 	//-----------------------------------------------------------------
 	public void sequence9(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
-		d.setWeightMsg("Påfyld vare,enter");
+		d.setWeightMsg("Påfyld vare");
 		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
 		d.setServerInput(inFromServer.readLine());
@@ -241,7 +234,7 @@ public class Sequences {
 	// (11) Operatøren instrueres til at fjerne netto og tara.
 	//-----------------------------------------------------------------
 	public void sequence11(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
-		d.setWeightMsg("Fjern enheder,enter");
+		d.setWeightMsg("Fjern enheder");
 		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
 		d.setServerInput(inFromServer.readLine());
@@ -260,12 +253,10 @@ public class Sequences {
 			this.sequence1(inFromServer, outToServer);
 	}
 	//-----------------------------------------------------------------
-	// (12) Vægt tareres.
+	// (12) Vægt tareres, så den er klar til en ny omgang
 	//-----------------------------------------------------------------	
 	public void sequence12(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
-		d.setWeightMsg("Vaegt er tareret");
-		outToServer.writeBytes("D \""+d.getWeightMsg()+"\"\r\n");
 		outToServer.writeBytes("T\r\n");
 		this.sequence13(inFromServer, outToServer);
 	}
@@ -290,7 +281,7 @@ public class Sequences {
 	public void sequence14(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		if(d.getBruttoCheck() >= 2 || d.getBruttoCheck() <= -2){
 
-			d.setWeightMsg("Afvejning afvist,enter");
+			d.setWeightMsg("Afvejning afvist");
 			outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
 			d.setServerInput(inFromServer.readLine());
@@ -307,7 +298,7 @@ public class Sequences {
 
 			d.setWeightMsg("Afvejning godkendt!");
 
-			outToServer.writeBytes("D \""+ d.getWeightMsg() +"\"\r\n");
+			outToServer.writeBytes("RM20 4 \""+ d.getWeightMsg() +"\"\r\n");
 			inFromServer.readLine();
 			inFromServer.readLine();
 			this.sequence15(inFromServer, outToServer);
@@ -323,7 +314,7 @@ public class Sequences {
 			log();
 		}
 		catch(FileNotFoundException e){
-			d.setWeightMsg("Logning kunne ikke foretages. Tast enter for at starte forfra");
+			d.setWeightMsg("Logfejl. Afvist!");
 			outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
 			d.setServerInput(inFromServer.readLine());
