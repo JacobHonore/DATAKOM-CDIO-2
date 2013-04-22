@@ -14,7 +14,7 @@ public class Main {
 
 		Sequences s = new Sequences();
 
-		Socket clientSocket = new Socket("localhost", 4567); 
+		Socket clientSocket = new Socket("169.254.2.3", 8000); 
 
 		DataOutputStream outToServer = 
 				new DataOutputStream(clientSocket.getOutputStream()); 

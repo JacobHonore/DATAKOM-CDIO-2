@@ -12,19 +12,16 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 
 public class Sequences {
-
-	private String weightMsg, oprID, serverInput, itemName, userInput;
-	private int itemNoInput, itemNoStore;
-	private String[] splittedInput = new String[10];
-	private double tara, netto, bruttoCheck;
+	
+	Data d = new Data();
 
 	//-----------------------------------------------------------------
 	// (1)	Vægtdisplay spørger om oprID og afventer input
 	//-----------------------------------------------------------------
 	public void sequence1(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		weightMsg = "Indtast ID";
-		outToServer.writeBytes("RM20 8 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+		d.setWeightMsg("Indtast ID");
+		outToServer.writeBytes("RM20 8 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 		outToServer.flush();
 		this.sequence2(inFromServer, outToServer);
 	}
@@ -34,22 +31,19 @@ public class Sequences {
 	//-----------------------------------------------------------------
 	public void sequence2(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		System.out.println("Inde i seq2");
-		serverInput = inFromServer.readLine();
-		System.out.println("SERVERINPUT I SEQ2: " + serverInput);
-		//				serverInput = inFromServer.readLine();
-		//		serverInput = inFromServer.readLine();
-		if(serverInput.equals("RM20 B")){
-			serverInput = inFromServer.readLine();
+		d.setServerInput(inFromServer.readLine());
+//		d.setServerInput(inFromServer.readLine());
+		d.setServerInput(inFromServer.readLine());
+		if(d.getServerInput().equals("RM20 B")){
+			d.setServerInput(inFromServer.readLine());
 			if (!aborted()) {
-				splittedInput = serverInput.split(" ");
-				oprID = splittedInput[2];
+				d.setSplittedInput(d.getServerInput().split(" "));
+				d.setOprID(d.getSplittedInput()[2]); // MÅSKE FEJL!!!!
 				this.sequence3(inFromServer, outToServer);
 			}
 			else
 				this.sequence1(inFromServer, outToServer);
 		}
-		System.out.println("sekvens3 kaldt");
 	}
 
 	//-----------------------------------------------------------------
@@ -58,8 +52,8 @@ public class Sequences {
 	public void sequence3(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
 		//Sekvens 3 kunne kombineres med sekvens 4.
-		weightMsg = "Indtast varenummer";
-		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+		d.setWeightMsg("Indtast varenummer");
+		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 		this.sequence4(inFromServer, outToServer);
 	}
 
@@ -68,15 +62,23 @@ public class Sequences {
 	//-----------------------------------------------------------------
 	public void sequence4(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		serverInput = inFromServer.readLine();
-		splittedInput = serverInput.split(" ");
+		d.setServerInput(inFromServer.readLine());
+		d.setSplittedInput(d.getServerInput().split(" "));
 		//Herunder modtager vi RM20 B ordren som indeholder et varenummer.
 		//Kommandoen opdeles ved hjælp af split og vi vælger plads [2], således at vi ender med et varenummer. 
-		if(serverInput.equals("RM20 B")){ 
-			serverInput = inFromServer.readLine();
+		if(d.getServerInput().equals("RM20 B")){ 
+			d.setServerInput(inFromServer.readLine());
 			if(!aborted()){
-				splittedInput = serverInput.split(" ");
-				itemNoInput = Integer.parseInt(splittedInput[2]);
+				d.setSplittedInput(d.getServerInput().split(" "));
+				
+				System.out.println("" + d.getServerInput());
+				System.out.println("" + d.getSplittedInput()[2]);
+				
+				String temp;
+				temp = d.getSplittedInput()[2].replaceAll("\"","");
+				System.out.println(temp);
+				
+				d.setItemNoInput(Integer.parseInt(temp));
 				this.sequence5_6(inFromServer, outToServer);
 			}
 			else
@@ -99,39 +101,52 @@ public class Sequences {
 
 		while(notFound){
 			try{
-				splittedInput = inFromLocal.readLine().split(",");
+				d.setSplittedInput(inFromLocal.readLine().split(","));
 			}
 			catch(NullPointerException e){
 				notFound = true;
 			}
-			itemNoStore = Integer.parseInt(splittedInput[0]);
-			if(itemNoStore == itemNoInput){ 
+			d.setItemNoStore(Integer.parseInt(d.getSplittedInput()[0]));
+			System.out.println("store: " + d.getItemNoStore());
+			System.out.println("input: " + d.getItemNoInput() + "\n");
+			
+			if(d.getItemNoStore() == d.getItemNoInput()){ 
 				inFromLocal.close();
 				//Så snart at det indtastede nummer er lig et nummer i "databasen", 
 				// sættes notFound = false og nedenstående kode eksekveres. 
 				notFound = false;
-				itemName = splittedInput[1];
-				weightMsg = "Vare: " + itemName + "\nTast 1 for OK eller 0 for Annuller."; 
-				outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+				d.setItemName(d.getSplittedInput()[1]);
+				
+				System.out.println(">>"+d.getItemName());
+				
+				d.setWeightMsg("Vare: " + d.getItemName()); 
+				
+				System.out.println("msg: " + d.getWeightMsg());
+				
+				outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
+				outToServer.flush();
 
-				serverInput = inFromServer.readLine();
-				//	serverInput = inFromServer.readLine();
-				//	serverInput = inFromServer.readLine();
-				splittedInput = serverInput.split(" ");
-				if(serverInput.equals("RM20 B"))
+				d.setServerInput(inFromServer.readLine());
+//				d.setServerInput(inFromServer.readLine());
+//				d.setServerInput(inFromServer.readLine());
+				
+				d.setSplittedInput(d.getServerInput().split(" "));
+				if(d.getServerInput().equals("RM20 B"))
 				{
-					serverInput = inFromServer.readLine();
+					d.setServerInput(inFromServer.readLine());
 					if(!aborted()){
-						splittedInput = serverInput.split(" ");
-						userInput = splittedInput[2];		
+						d.setSplittedInput(d.getServerInput().split(" "));
+						d.setUserInput(d.getSplittedInput()[2]);		
 
 						//Hvis varen er korrekt fortsættes der til sekvens 7 ellers starter man forfra i sekvens 3.
-						if(userInput.equals("1"))
+						System.out.println("server: " + d.getUserInput());
+						
+						if(d.getUserInput().equals("\"1\""))
 						{
 							this.sequence7(inFromServer, outToServer);
 						}
 						//Fejl: Kan annullere, men kan derefter ikke v�lge samme vare igen.
-						else if(userInput.equals("0"))
+						else if(d.getUserInput().equals("0"))
 						{
 							this.sequence3(inFromServer, outToServer);
 						}
@@ -141,8 +156,8 @@ public class Sequences {
 				}
 			}
 		}
-		weightMsg = "Varenummer ikke fundet. Tast enter.";
-		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+		d.setWeightMsg("Varenummer ikke fundet. Tast enter.");
+		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 		inFromServer.readLine();
 		this.sequence3(inFromServer, outToServer);
 
@@ -153,13 +168,13 @@ public class Sequences {
 	//-----------------------------------------------------------------
 	public void sequence7(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		weightMsg = "Anbring evt. skaal og tast enter.";
-		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+		d.setWeightMsg("Anbring skål,enter");
+		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
-		serverInput = inFromServer.readLine();
+		d.setServerInput(inFromServer.readLine());
 
-		if(serverInput.equals("RM20 B"))
-			serverInput = inFromServer.readLine();
+		if(d.getServerInput().equals("RM20 B"))
+			d.setServerInput(inFromServer.readLine());
 		else
 			this.sequence7(inFromServer, outToServer);
 
@@ -177,10 +192,10 @@ public class Sequences {
 	{
 		outToServer.writeBytes("T\r\n");
 
-		serverInput = inFromServer.readLine();
-		if(serverInput.startsWith("T S")){
-			splittedInput = serverInput.split(" +");
-			tara = Double.parseDouble(splittedInput[2]);
+		d.setServerInput(inFromServer.readLine());
+		if(d.getServerInput().startsWith("T S")){
+			d.setSplittedInput(d.getServerInput().split(" +"));
+			d.setTara(Double.parseDouble(d.getSplittedInput()[2]));
 			this.sequence9(inFromServer, outToServer);
 		}
 		else this.sequence7(inFromServer, outToServer);
@@ -190,13 +205,13 @@ public class Sequences {
 	// (9) Operatøren instrueres til at påfylde vare og derefter trykke enter.
 	//-----------------------------------------------------------------
 	public void sequence9(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
-		weightMsg = "P�fyld vare og tast enter.";
-		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+		d.setWeightMsg("Påfyld vare,enter");
+		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
-		serverInput = inFromServer.readLine();
+		d.setServerInput(inFromServer.readLine());
 
-		if(serverInput.equals("RM20 B"))
-			serverInput = inFromServer.readLine();
+		if(d.getServerInput().equals("RM20 B"))
+			d.setServerInput(inFromServer.readLine());
 		else
 			this.sequence9(inFromServer, outToServer);
 
@@ -213,10 +228,10 @@ public class Sequences {
 
 		outToServer.writeBytes("S\r\n");
 
-		serverInput = inFromServer.readLine();
-		if(serverInput.startsWith("S S")){
-			splittedInput = serverInput.split(" +");
-			netto = Double.parseDouble(splittedInput[2])-tara;
+		d.setServerInput(inFromServer.readLine());
+		if(d.getServerInput().startsWith("S S")){
+			d.setSplittedInput(d.getServerInput().split(" +"));
+			d.setNetto(Double.parseDouble(d.getSplittedInput()[2])-d.getTara());
 			this.sequence11(inFromServer, outToServer);
 		}
 		else this.sequence9(inFromServer, outToServer);
@@ -226,14 +241,14 @@ public class Sequences {
 	// (11) Operatøren instrueres til at fjerne netto og tara.
 	//-----------------------------------------------------------------
 	public void sequence11(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
-		weightMsg = "Fjern enheder fra v�gt og tast enter.";
-		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+		d.setWeightMsg("Fjern enheder,enter");
+		outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
-		serverInput = inFromServer.readLine();
+		d.setServerInput(inFromServer.readLine());
 
 
-		if(serverInput.equals("RM20 B"))
-			serverInput = inFromServer.readLine();
+		if(d.getServerInput().equals("RM20 B"))
+			d.setServerInput(inFromServer.readLine());
 
 		else
 			this.sequence11(inFromServer, outToServer);
@@ -249,8 +264,8 @@ public class Sequences {
 	//-----------------------------------------------------------------	
 	public void sequence12(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
-		weightMsg = "V�gt er tareret";
-		outToServer.writeBytes("D \""+weightMsg+"\"\r\n");
+		d.setWeightMsg("Vaegt er tareret");
+		outToServer.writeBytes("D \""+d.getWeightMsg()+"\"\r\n");
 		outToServer.writeBytes("T\r\n");
 		this.sequence13(inFromServer, outToServer);
 	}
@@ -260,10 +275,10 @@ public class Sequences {
 	//-----------------------------------------------------------------
 	public void sequence13(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 
-		serverInput = inFromServer.readLine();
-		if(serverInput.startsWith("T S")){
-			splittedInput = serverInput.split(" +");
-			bruttoCheck = Double.parseDouble(splittedInput[2]);
+		d.setServerInput(inFromServer.readLine());
+		if(d.getServerInput().startsWith("T S")){
+			d.setSplittedInput(d.getServerInput().split(" +"));
+			d.setBruttoCheck(Double.parseDouble(d.getSplittedInput()[2]));
 			this.sequence13(inFromServer, outToServer);
 		}
 		else this.sequence14(inFromServer, outToServer);
@@ -273,26 +288,26 @@ public class Sequences {
 	// (14) Bruttokontrol OK, hvis det er tilfældet.
 	//-----------------------------------------------------------------
 	public void sequence14(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
-		if(bruttoCheck >= 2 || bruttoCheck <= -2){
+		if(d.getBruttoCheck() >= 2 || d.getBruttoCheck() <= -2){
 
-			weightMsg = "Afvejning afvist. Tast enter for at veje igen.";
-			outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+			d.setWeightMsg("Afvejning afvist,enter");
+			outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
-			serverInput = inFromServer.readLine();
+			d.setServerInput(inFromServer.readLine());
 
-			if(serverInput.equals("RM20 B"))
-				serverInput = inFromServer.readLine();
+			if(d.getServerInput().equals("RM20 B"))
+				d.setServerInput(inFromServer.readLine());
 			else
 				this.sequence14(inFromServer, outToServer);
 
-			if(serverInput.startsWith("RM20 A"))
+			if(d.getServerInput().startsWith("RM20 A"))
 				this.sequence7(inFromServer, outToServer);
 		}
 		else{
 
-			weightMsg = "Afvejning godkendt!";
+			d.setWeightMsg("Afvejning godkendt!");
 
-			outToServer.writeBytes("D \""+ weightMsg +"\"\r\n");
+			outToServer.writeBytes("D \""+ d.getWeightMsg() +"\"\r\n");
 			inFromServer.readLine();
 			inFromServer.readLine();
 			this.sequence15(inFromServer, outToServer);
@@ -308,17 +323,17 @@ public class Sequences {
 			log();
 		}
 		catch(FileNotFoundException e){
-			weightMsg = "Logning kunne ikke foretages. Tast enter for at starte forfra";
-			outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
+			d.setWeightMsg("Logning kunne ikke foretages. Tast enter for at starte forfra");
+			outToServer.writeBytes("RM20 4 \"" + d.getWeightMsg() + "\" \" \" \"&3\"\r\n");
 
-			serverInput = inFromServer.readLine();
+			d.setServerInput(inFromServer.readLine());
 
-			if(serverInput.equals("RM20 B"))
-				serverInput = inFromServer.readLine();
+			if(d.getServerInput().equals("RM20 B"))
+				d.setServerInput(inFromServer.readLine());
 			else
 				this.sequence15(inFromServer, outToServer);
 
-			if(serverInput.startsWith("RM20 A"))
+			if(d.getServerInput().startsWith("RM20 A"))
 				this.sequence1(inFromServer, outToServer);
 		}
 
@@ -329,18 +344,18 @@ public class Sequences {
 	public void log() throws IOException{
 
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("Log.txt"), true));
-		Calendar d = Calendar.getInstance();
+		Calendar c = Calendar.getInstance();
 		DecimalFormat df = new DecimalFormat("00");
-		String timeStamp = "" + d.get(Calendar.YEAR) + "-" + df.format(d.get(Calendar.MONTH) + 1) + "-" + df.format(d.get(Calendar.DATE)) + "-" + df.format(d.get(Calendar.HOUR_OF_DAY)) + ":" + df.format(d.get(Calendar.MINUTE)) + ":" + df.format(d.get(Calendar.SECOND));
+		String timeStamp = "" + c.get(Calendar.YEAR) + "-" + df.format(c.get(Calendar.MONTH) + 1) + "-" + df.format(c.get(Calendar.DATE)) + "-" + df.format(c.get(Calendar.HOUR_OF_DAY)) + ":" + df.format(c.get(Calendar.MINUTE)) + ":" + df.format(c.get(Calendar.SECOND));
 
-		bw.write(timeStamp + ", " + oprID + ", " + itemNoInput + ", " + itemName + ", " + netto + " kg.");
+		bw.write(timeStamp + ", " + d.getOprID() + ", " + d.getItemNoInput() + ", " + d.getItemName() + ", " + d.getNetto() + " kg.");
 		bw.newLine();
 		bw.flush();
 		bw.close();
 	}
 
 	boolean aborted(){
-		return !serverInput.startsWith("RM20 A");
+		return !d.getServerInput().startsWith("RM20 A");
 	}
 
 
