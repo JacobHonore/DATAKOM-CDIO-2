@@ -19,7 +19,7 @@ public class Sequences {
 	private double tara, netto, bruttoCheck;
 
 	//-----------------------------------------------------------------
-	// (1)	V�gtdisplay sp�rger om oprID og afventer input
+	// (1)	Vægtdisplay spørger om oprID og afventer input
 	//-----------------------------------------------------------------
 	public void sequence1(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -30,7 +30,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (2)	oprID indl�ses og gemmes i lokal variabel
+	// (2)	oprID indlæses og gemmes i lokal variabel
 	//-----------------------------------------------------------------
 	public void sequence2(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -53,7 +53,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (3)	V�gtdisplay sp�rger om varenummer og afventer input
+	// (3)	Vægtdisplay spørger om varenummer og afventer input
 	//-----------------------------------------------------------------
 	public void sequence3(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -64,7 +64,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (4)	Varenummer indl�ses og gemmes i lokal variabel
+	// (4)	Varenummer indlæses og gemmes i lokal variabel
 	//-----------------------------------------------------------------
 	public void sequence4(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -86,9 +86,9 @@ public class Sequences {
 
 	//-----------------------------------------------------------------
 	// (5)	Program sammenligner userinput med varenumre i store.txt
-	// (6)	N�r identisk varenummer er fundet sp�rger program bruger
+	// (6)	Når identisk varenummer er fundet spørger program bruger
 	//		om det er korrekt varenavn. Hvis ja sendes videre til n�ste
-	//		sekvens. Hvis nej k�res sequence3()
+	//		sekvens. Hvis nej køres sequence3()
 	//-----------------------------------------------------------------
 	public void sequence5_6(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -149,11 +149,11 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (7)	V�gtdisplay beder om evt. tara og at brugeren bekræfter. 	
+	// (7)	Vægtdisplay beder om evt. tara og at brugeren bekræfter. 	
 	//-----------------------------------------------------------------
 	public void sequence7(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
-		weightMsg = "Anbring evt. sk�l og tast enter.";
+		weightMsg = "Anbring evt. skaal og tast enter.";
 		outToServer.writeBytes("RM20 4 \"" + weightMsg + "\" \" \" \"&3\"\r\n");
 
 		serverInput = inFromServer.readLine();
@@ -171,7 +171,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (8) V�gt tareres og tara gemmes i lokal variabel
+	// (8) Vægt tareres og tara gemmes i lokal variabel
 	//-----------------------------------------------------------------
 	public void sequence8(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException
 	{
@@ -223,7 +223,7 @@ public class Sequences {
 	}
 
 	//-----------------------------------------------------------------
-	// (11) Operat�ren instrueres til at fjerne netto og tara.
+	// (11) Operatøren instrueres til at fjerne netto og tara.
 	//-----------------------------------------------------------------
 	public void sequence11(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		weightMsg = "Fjern enheder fra v�gt og tast enter.";
@@ -270,7 +270,7 @@ public class Sequences {
 	}
 	
 	//-----------------------------------------------------------------
-	// (14) Bruttokontrol OK, hvis det er tilf�ldet.
+	// (14) Bruttokontrol OK, hvis det er tilfældet.
 	//-----------------------------------------------------------------
 	public void sequence14(BufferedReader inFromServer, DataOutputStream outToServer) throws IOException{
 		if(bruttoCheck >= 2 || bruttoCheck <= -2){
